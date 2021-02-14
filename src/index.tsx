@@ -1,13 +1,38 @@
-import { useState } from 'react'
+import * as esbuild from 'esbuild-wasm';
+import { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
-
+import { unpkgPathPlugin } from './plugins/unpkg-path-plugin'
 const App = () => {
     const [value, setValue] = useState('');
     const [code, setCode] = useState('');
-    const onClick = () => {
-        console.log(value)
-        setCode('transplied code')
-    }
+    const ref = useRef<any>();
+    const startService = async () => {
+        const service = await esbuild.startService({
+            worker: true,
+            wasmURL: '/esbuild.wasm'
+        });
+        ref.current = service;
+    };
+    useEffect(() => {
+        startService();
+    }, []);
+    const onClick = async () => {
+        if (!ref.current) {
+            return;
+        };
+        // const result = await ref.current.transform(value, {
+        //     loader: 'jsx',
+        //     target: 'es2015'
+        // });
+        const result = await ref.current.build({
+            entryPoints: ['index.js'],
+            bundle: true,
+            write: false,
+            plugins: [unpkgPathPlugin()]
+        })
+        console.log(result);
+        setCode(result.outputFiles[0].text);
+    };
     return (
         <div>
             <textarea value={value} onChange={(e) => setValue(e.target.value)}>
