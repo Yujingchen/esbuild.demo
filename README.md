@@ -1,1 +1,1 @@
-TS Jbook use esbuild bundler
+TS Jbook
