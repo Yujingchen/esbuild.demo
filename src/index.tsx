@@ -2,6 +2,7 @@ import * as esbuild from 'esbuild-wasm';
 import { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { unpkgPathPlugin } from './plugins/unpkg-path-plugin'
+import { fetchPlugin } from './plugins/fetch-plugin';
 const App = () => {
     const [value, setValue] = useState('');
     const [code, setCode] = useState('');
@@ -20,16 +21,17 @@ const App = () => {
         if (!ref.current) {
             return;
         };
-        // const result = await ref.current.transform(value, {
-        //     loader: 'jsx',
-        //     target: 'es2015'
-        // });
         const result = await ref.current.build({
             entryPoints: ['index.js'],
             bundle: true,
             write: false,
-            plugins: [unpkgPathPlugin()]
+            define: {
+                'process.env.NODE_ENV': '"production"',
+                global: 'window'
+            },
+            plugins: [unpkgPathPlugin(), fetchPlugin(value)]
         })
+
         console.log(result);
         setCode(result.outputFiles[0].text);
     };
