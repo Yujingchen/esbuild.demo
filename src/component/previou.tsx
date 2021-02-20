@@ -30,8 +30,9 @@ const Preview: React.FC<PreviewProps> = ({ code }) => {
     const iframe = useRef<any>();
     useEffect(() => {
         iframe.current.srcdoc = html;
+        //message code to iframe
+        //iframe use event listener to receive the code from event.data
         iframe.current.contentWindow.postMessage(code, '*');
-
     }, [code]);
 
     return (<iframe ref={iframe} sandbox='allow-scripts' srcDoc={html} title='preview' />);
