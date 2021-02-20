@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 interface PreviewProps {
     code: string;
 }
-const iframe = useRef<any>();
 
 const html = `
 <html>
@@ -25,10 +24,14 @@ window.addEventListener('message',(event)=>{
 </html>`
 
 const Preview: React.FC<PreviewProps> = ({ code }) => {
+    const iframe = useRef<any>();
     useEffect(() => {
         iframe.current.srcdoc = html;
-    }, [code])
-    return <iframe />
+        iframe.current.contentWindow.postMessage(code, '*');
+
+    }, [code]);
+
+    return (<iframe ref={iframe} sandbox='allow-scripts' srcDoc={html} title='preview' />);
 }
 
 export default Preview

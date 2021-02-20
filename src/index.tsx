@@ -5,8 +5,11 @@ import { unpkgPathPlugin } from './plugins/unpkg-path-plugin'
 import { fetchPlugin } from './plugins/fetch-plugin';
 import CodeEditor from './component/code-editor';
 import 'bulmaswatch/superhero/bulmaswatch.min.css';
+import Preview from './component/previou';
+
 const App = () => {
     const [value, setValue] = useState('');
+    const [code, setCode] = useState('');
     const ref = useRef<any>();
     const startService = async () => {
         const service = await esbuild.startService({
@@ -34,6 +37,7 @@ const App = () => {
             plugins: [unpkgPathPlugin(), fetchPlugin(value)]
         });
         // iframe.current.contentWindow.postMessage(result.outputFiles[0].text, '*');
+        setCode(result.outputFiles[0].text)
     };
 
 
@@ -57,9 +61,10 @@ const App = () => {
                     Submit
              </button>
             </div>
-            <iframe ref={iframe} sandbox='allow-scripts' srcDoc={html} title='preview'>
-            </iframe>
-        </div>
+            <Preview code={code}></Preview>
+            {/* <iframe ref={iframe} sandbox='allow-scripts' srcDoc={html} title='preview'> */}
+            {/* </iframe> */}
+        </div >
         // <div>
         //     <textarea value={value} onChange={(e) => setValue(e.target.value)}>
         //     </textarea>
